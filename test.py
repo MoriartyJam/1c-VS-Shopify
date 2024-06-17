@@ -1,7 +1,11 @@
+from flask import Flask, render_template_string, redirect, url_for, jsonify
 import requests
 from requests.auth import HTTPBasicAuth
 import json
 from datetime import datetime
+
+# Flask application setup
+app = Flask(__name__)
 
 # URL to fetch the products
 url = "http://207.180.219.163:65180/floristics/hs/Post/v1/GetAllItemsShopify"
@@ -12,7 +16,7 @@ password = "Ufpc4405"
 
 # Shopify API credentials
 shopify_store_url = "https://quickstart-da63505a.myshopify.com"
-
+access_token = "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"
 
 # Example payload (modify according to the API's requirements)
 payload = {}
@@ -20,14 +24,9 @@ payload = {}
 
 def fetch_products():
     try:
-        # Send POST request with basic authentication and payload
         response = requests.post(url, auth=HTTPBasicAuth(username, password), json=payload)
-
-        # Check if the request was successful
         if response.status_code == 200:
-            # Decode response content using utf-8-sig to handle BOM
             content = response.content.decode('utf-8-sig')
-            # Parse JSON response
             products = json.loads(content)
             return products
         else:
@@ -164,5 +163,84 @@ def main():
         print("No products found or an error occurred.")
 
 
-if __name__ == "__main__":
+# Flask route to trigger the product fetch and send process
+@app.route('/sync_products')
+def sync_products():
     main()
+    return jsonify({'status': 'finished'})
+
+
+# Flask route for the home page with the button
+@app.route('/')
+def index():
+    return render_template_string('''
+        <style>
+            body, html {
+                height: 100%;
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                background-color: #f2f2f2;
+                font-family: Arial, sans-serif;
+            }
+            .container {
+                max-width: 80%;
+                margin: auto;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            h1 {
+                margin-bottom: 20px;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                transition: background-color 0.3s ease;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
+            #status img {
+                width: 250px;
+                height: 150px;
+            }
+
+            #status {
+                padding-top: 10px
+            }
+        </style>
+        <div class="container">
+            <h1>Sync 1c to Shopify</h1>
+            <button onclick="syncProducts()">Sync Products to Shopify</button>
+            <div id="status"></div>
+        </div>
+        <script>
+            function syncProducts() {
+                document.getElementById("status").innerHTML = '<img src="https://i.gifer.com/YCZH.gif" alt="Loading"/>';
+                fetch('/sync_products')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'finished') {
+                            document.getElementById("status").innerHTML = 'Sync process finished.';
+                        } else {
+                            document.getElementById("status").innerHTML = 'An error occurred during sync.';
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById("status").innerHTML = 'An error occurred during sync.';
+                    });
+            }
+        </script>
+    ''')
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
