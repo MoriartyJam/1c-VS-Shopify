@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template_string, redirect, url_for, jsonify
 import requests
 from requests.auth import HTTPBasicAuth
@@ -15,8 +16,8 @@ username = "web"
 password = "Ufpc4405"
 
 # Shopify API credentials
-shopify_store_url = "https://quickstart-da63505a.myshopify.com"
-access_token = "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"
+shopify_store_url = os.getenv('SHOPIFY_STORE_URL')
+access_token =  os.getenv('SHOPIFY_ACCESS_TOKEN')
 
 # Example payload (modify according to the API's requirements)
 payload = {}
