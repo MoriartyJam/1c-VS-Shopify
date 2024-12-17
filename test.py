@@ -9,7 +9,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # URL to fetch the products
-url = "http://207.180.219.163:65180/floristics/hs/Post/v1/GetAllItemsShopify"
+url = "http://212.2.234.63:65180/floristics/hs/Post/v1/GetAllItemsShopify"
 
 # Basic authentication credentials
 username = "web"
