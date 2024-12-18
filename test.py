@@ -16,7 +16,7 @@ username = "web"
 password = "Ufpc4405"
 
 # Shopify API credentials
-shopify_store_url = "https://shop.amberamaze.com"
+shopify_store_url = "https://948ab3-07.myshopify.com"
 access_token =  os.getenv('SHOPIFY_ACCESS_TOKEN')
 
 # Example payload (modify according to the API's requirements)
